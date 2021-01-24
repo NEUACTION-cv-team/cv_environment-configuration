@@ -1,77 +1,64 @@
-### Hades Canyon Configuration
-
-Copyright © 2018 FortiSTray_Action. All Rights Reserved.
-
----
-#### How to install ubuntu alongside Windows
-##### Refer to this article to assign disks
-https://blog.csdn.net/lxlong89940101/article/details/80604937        
-https://blog.csdn.net/baidu_36602427/article/details/86548203
-
-#### Preparation before installing libraries
-
-##### Change Ubuntu source to tuna
-
-```bash
-sudo gedit /etc/apt/sources.list
-```
-
-Replace all contains to follows
-
-```bash
-# 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restricted universe multiverse
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restricted universe multiverse
-
-# 预发布软件源，不建议启用
-# deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse
-
-```
-
-```bash
-sudo apt-get update && sudo apt-get upgrade 
-```
-
-##### Install Git
-
-```bash
-sudo apt-get install git
-```
-
-##### Install CMake
-
-```bash
-sudo apt-get install cmake
-```
 
 #### Install librealsense (v2.16.1)
 
-* Download source code from Github (Release > Intel® RealSense™ SDK 2.0 (build 2.16.1))
+from   https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md
 
-  Extract the `.tar.gz` file to `~/Library`
+Intel® RealSense™ SDK 2.0 provides installation packages for Intel X86/AMD64-based Debian distributions in dpkg format for Ubuntu 16/18/20 LTS.
+
+The Realsense DKMS kernel drivers package (librealsense2-dkms) supports Ubuntu LTS kernels 4.4, 4.8, 4.10, 4.13, 4.15, 4.18*, 5.0*, 5.3* and 5.4. Please refer to Ubuntu Kernel Release Schedule for further details.
 
   Unplug any connected Intel RealSense camera
 
-* Navigate to librealsense root directory
+## Installing the packages:
+- Register the server's public key:  
+`sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE`
+In case the public key still cannot be retrieved, check and specify proxy settings: `export http_proxy="http://<proxy>:<port>"`  
+, and rerun the command. See additional methods in the following [link](https://unix.stackexchange.com/questions/361213/unable-to-add-gpg-key-with-apt-key-behind-a-proxy).  
 
-  ```bash
-  sudo apt-get install libssl-dev libusb-1.0-0-dev pkg-config libgtk-3-dev
-  sudo apt-get install libglfw3-dev
-  sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/ 
-  sudo udevadm control --reload-rules && udevadm trigger
-  ./scripts/patch-realsense-ubuntu-lts.sh
-  echo 'hid_sensor_custom' | sudo tee -a /etc/modules
-  mkdir build && cd build
-  cmake .. -DCMAKE_BUILD_TYPE=Release
-  sudo make uninstall && make clean && make -j8 && sudo make install
-  ```
+- Add the server to the list of repositories:  
+  Ubuntu 16 LTS:  
+`sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo xenial main" -u`  
+  Ubuntu 18 LTS:  
+`sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo bionic main" -u`  
+  Ubuntu 20 LTS:  
+`sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo focal main" -u`
+
+- Install the libraries (see section below if upgrading packages):  
+  `sudo apt-get install librealsense2-dkms`  
+  `sudo apt-get install librealsense2-utils`  
+  The above two lines will deploy librealsense2 udev rules, build and activate kernel modules, runtime library and executable demos and tools.  
+
+- Optionally install the developer and debug packages:  
+  `sudo apt-get install librealsense2-dev`  
+  `sudo apt-get install librealsense2-dbg`  
+  With `dev` package installed, you can compile an application with **librealsense** using `g++ -std=c++11 filename.cpp -lrealsense2` or an IDE of your choice.
+
+Reconnect the Intel RealSense depth camera and run: `realsense-viewer` to verify the installation.
+
+Verify that the kernel is updated :    
+`modinfo uvcvideo | grep "version:"` should include `realsense` string
+
+## Upgrading the Packages:
+Refresh the local packages cache by invoking:  
+  `sudo apt-get update`  
+
+Upgrade all the installed packages, including `librealsense` with:  
+  `sudo apt-get upgrade`
+
+To upgrade selected packages only a more granular approach can be applied:  
+  `sudo apt-get --only-upgrade install <package1 package2 ...>`  
+  E.g:   
+  `sudo apt-get --only-upgrade install  librealsense2-utils librealsense2-dkms`
+  
+## Uninstalling the Packages:
+**Important** Removing Debian package is allowed only when no other installed packages directly refer to it. For example removing `librealsense2-udev-rules` requires `librealsense2` to be removed first.
+
+Remove a single package with:   
+  `sudo apt-get purge <package-name>`  
+
+Remove all RealSense™ SDK-related packages with:   
+  `dpkg -l | grep "realsense" | cut -d " " -f 3 | xargs sudo dpkg --purge` 
+
 
 #### Install PCL (v1.8.1)
 
@@ -110,48 +97,13 @@ sudo apt-get install cmake
   make -j8
   sudo make install
   ```
+#### Install Mindvision
 
-#### Work environment optimization
+download software and follow the manual from this website
 
-##### Install chromium
+http://www.mindvision.com.cn/rjxz/list_12.aspx?lcid=138
 
-```bash
-sudo apt-get install chromium-browser
-```
-
-##### Install Sogou Pinyin input method
-
-Download `.deb` file from official website
-
-```bash
-sudo dpkg -i sogoupinyin_2.2.0.0108_amd64.deb
-sudo apt-get install -f
-```
-
-Set `System Settings > Language Support > Keyboard input method system = fcitx`
-
-Log out &  Log in
-
-Keyboard icon on the right top > add `Sogou Pinyin`
-
-```bash
-sudo apt-get remove fcitx-ui-qimpanel
-```
-
-Log out &  Log in
-
-##### Install vscode
-
-Download `.deb` file from official website
-
-```bash
-sudo apt-get install -f
-sudo dpkg -i code_1.29.1-1542309157_amd64.deb
-```
-##### Resolve dependencies
-```bash
-sudo apt-get install -f
-```
+#### Install Azure Kinect DK 
 
 
 
