@@ -2,7 +2,7 @@
 
 实验室现在常用的环境配置
 
-####opencv####
+#opencv#
 
 https://opencv.org/
 ```bash
@@ -13,7 +13,7 @@ https://opencv.org/
 ```
 
 
-####PCL(Point Cloud Library)####
+#PCL(Point Cloud Library)#
 ```bash
 https://pointclouds.org/
 
@@ -23,7 +23,7 @@ https://pointclouds.org/
 
 
 
-####realsense####
+#realsense#
 ```bash
 https://www.intelrealsense.com
 
@@ -31,7 +31,7 @@ https://www.intelrealsense.com
 ```
  
 
-####mindvision####
+#mindvision#
 ```bash
 迈德威视http://www.mindvision.com.cn/
 
@@ -39,7 +39,7 @@ https://www.intelrealsense.com
 ```
 
 
-####kinect#####
+#kinect#
 ```bash
 https://docs.microsoft.com/zh-cn/azure/kinect-dk/
 
