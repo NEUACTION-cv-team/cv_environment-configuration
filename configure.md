@@ -1,5 +1,5 @@
 
-#### Install librealsense (v2.16.1)
+#### Install librealsense 
 
 from   https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md
 
