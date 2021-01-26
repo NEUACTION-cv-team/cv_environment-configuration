@@ -105,5 +105,19 @@ http://www.mindvision.com.cn/rjxz/list_12.aspx?lcid=138
 
 #### Install Azure Kinect DK 
 
+官方给的安装文档有问题，参照这个网址给的配置方式
+
+https://blog.csdn.net/star0w/article/details/103402207
+
+https://blog.csdn.net/weixin_44480249/article/details/107620446  这个比较好用，但是有些版本不适合
+
+https://blog.csdn.net/u013270341/article/details/97431883   这个是一个人的踩坑记录
+
+建议使用ubuntu18.04，使用16.04版本存在一定的问题
+
+在更换libyuv里面的文件的时候，要吧src直接删了，然后从github下载下来的改名字直接复制进去，不然是要报错的
+
+cmake建议版本3.14+
+
 
 
